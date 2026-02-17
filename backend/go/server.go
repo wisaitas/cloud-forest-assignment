@@ -66,7 +66,6 @@ type PowerRequest struct {
 }
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
 
 	http.HandleFunc("/v1/skus", handleSKUs)
 	http.HandleFunc("/v1/availability", handleAvailability)
