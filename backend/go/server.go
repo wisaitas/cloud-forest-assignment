@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"log"
 	"math/rand"
@@ -12,10 +11,10 @@ import (
 	"time"
 )
 
-var (
-	port        = flag.String("port", "8081", "Port")
-	failureRate = flag.Int("failure-rate", 20, "Percentage chance of errors")
-	slowRate    = flag.Int("slow-rate", 10, "Percentage chance of slow")
+const (
+	port        = "8081"
+	failureRate = 10
+	slowRate    = 20
 )
 
 type SKU struct {
@@ -67,7 +66,6 @@ type PowerRequest struct {
 }
 
 func main() {
-	flag.Parse()
 	rand.Seed(time.Now().UnixNano())
 
 	http.HandleFunc("/v1/skus", handleSKUs)
@@ -75,8 +73,8 @@ func main() {
 	http.HandleFunc("/v1/resources", handleResources)
 	http.HandleFunc("/v1/resources/", handleResourceAction)
 
-	fmt.Printf("🔌 Infra Service running on :%s\n", *port)
-	if err := http.ListenAndServe(":"+*port, nil); err != nil {
+	fmt.Printf("🔌 Infra Service running on :%s\n", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -230,9 +228,9 @@ func handleResourceAction(w http.ResponseWriter, r *http.Request) {
 }
 
 func simulateChaos(w http.ResponseWriter) {
-	if isChaos(*slowRate) {
+	if isChaos(slowRate) {
 		time.Sleep(6 * time.Second)
-	} else if isChaos(*failureRate) {
+	} else if isChaos(failureRate) {
 		http.Error(w, `{"error": "Upstream service unavailable"}`, http.StatusInternalServerError)
 		panic(http.ErrAbortHandler)
 	}

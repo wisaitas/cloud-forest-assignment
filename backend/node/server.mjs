@@ -5,32 +5,9 @@ const app = express();
 app.use(express.json());
 
 
-const args = {};
-for (let i = 2; i < process.argv.length; i++) {
-  const arg = process.argv[i];
-  if (arg.startsWith('--')) {
-    const parts = arg.split('=');
-    const key = parts[0].replace(/^--/, '');
-    if (parts.length > 1) {
-      // Handles --key=value
-      args[key] = parts.slice(1).join('=');
-    } else {
-      // Handles --key (expecting value in next arg)
-      // Check if next arg exists and is not another flag
-      if (i + 1 < process.argv.length && !process.argv[i + 1].startsWith('--')) {
-        args[key] = process.argv[i + 1];
-        i++; // Consume the next argument
-      } else {
-        // Handle boolean flags or flags without value, setting to true if no explicit value
-        args[key] = true;
-      }
-    }
-  }
-}
-
-const PORT = args.port || 8081;
-const FAILURE_RATE = parseInt(args['failure-rate'] || '20', 10);
-const SLOW_RATE = parseInt(args['slow-rate'] || '10', 10);
+const PORT = 8081;
+const FAILURE_RATE = 10;
+const SLOW_RATE = 20;
 
 const simulateChaos = (res) => {
   return new Promise((resolve, reject) => {
