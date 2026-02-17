@@ -1,0 +1,102 @@
+{
+  "addons": [
+    {
+      "id": "addon-ram",
+      "type": "ram",
+      "name": "Extra RAM",
+      "unit": "GB",
+      "price_per_unit_hourly": 0.2,
+      "price_per_unit_monthly": 150
+    },
+    {
+      "id": "addon-disk",
+      "type": "disk",
+      "name": "Extra NVMe SSD",
+      "unit": "GB",
+      "price_per_unit_hourly": 0.05,
+      "price_per_unit_monthly": 30
+    }
+  ],
+  "skus": [
+    {
+      "sku": "C1-R1GB-D20GB",
+      "type": "virtual-machine",
+      "name": "Micro",
+      "cpu": 1,
+      "ram": 1,
+      "disk": 20,
+      "price_hourly": 0.27,
+      "price_monthly": 180
+    },
+    {
+      "sku": "C2-R4GB-D80GB",
+      "type": "virtual-machine",
+      "name": "Standard",
+      "cpu": 2,
+      "ram": 4,
+      "disk": 80,
+      "price_hourly": 1.1,
+      "price_monthly": 750
+    },
+    {
+      "sku": "C4-R8GB-D160GB",
+      "type": "virtual-machine",
+      "name": "Performance",
+      "cpu": 4,
+      "ram": 8,
+      "disk": 160,
+      "price_hourly": 2.2,
+      "price_monthly": 1500
+    },
+    {
+      "sku": "C8-R32GB-D320GB",
+      "type": "virtual-machine",
+      "name": "Pro Max",
+      "cpu": 8,
+      "ram": 32,
+      "disk": 320,
+      "price_hourly": 5.2,
+      "price_monthly": 3500
+    },
+    {
+      "sku": "C8-R16GB-D512GB",
+      "type": "dedicated",
+      "name": "Metal Alpha",
+      "cpu": 8,
+      "ram": 16,
+      "disk": 512,
+      "price_hourly": 18,
+      "price_monthly": 12000
+    },
+    {
+      "sku": "C16-R64GB-D1024GB",
+      "type": "dedicated",
+      "name": "Metal Beta",
+      "cpu": 16,
+      "ram": 64,
+      "disk": 1024,
+      "price_hourly": 42,
+      "price_monthly": 28000
+    },
+    {
+      "sku": "C32-R128GB-D2048GB",
+      "type": "dedicated",
+      "name": "Metal Gamma",
+      "cpu": 32,
+      "ram": 128,
+      "disk": 2048,
+      "price_hourly": 90,
+      "price_monthly": 60000
+    },
+    {
+      "sku": "C64-R256GB-D4096GB",
+      "type": "dedicated",
+      "name": "Metal Omega",
+      "cpu": 64,
+      "ram": 256,
+      "disk": 4096,
+      "price_hourly": 180,
+      "price_monthly": 120000
+    }
+  ]
+}

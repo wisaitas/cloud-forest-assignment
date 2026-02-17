@@ -1,0 +1,219 @@
+openapi: 3.0.0
+info:
+  title: Infrastructure Microservice
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081
+    description: Local Mock Server
+
+paths:
+  /v1/skus:
+    get:
+      summary: List all available server SKUs
+      operationId: listSKUs
+      responses:
+        '200':
+          description: A list of SKUs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  skus:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SKU'
+
+  /v1/availability:
+    post:
+      summary: Check availability of a specific SKU
+      operationId: checkAvailability
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sku
+              properties:
+                sku:
+                  type: string
+                  example: "C1-R1GB-D20GB"
+      responses:
+        '200':
+          description: Availability status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sku:
+                    type: string
+                  available:
+                    type: boolean
+
+  /v1/resources:
+    get:
+      summary: List all provisioned resources
+      operationId: listResources
+      responses:
+        '200':
+          description: A list of provisioned resources
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resources:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Resource'
+    post:
+      summary: Provision a new server
+      operationId: provisionResource
+      description: |
+        Provisions a new server resource.
+        NOTE: This endpoint has a simulated failure rate (default 20%) and delay (default 10%).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sku
+              properties:
+                sku:
+                  type: string
+                  example: "C1-R1GB-D20GB"
+      responses:
+        '200':
+          description: Resource provisioned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '400':
+          description: Invalid SKU or bad request
+        '500':
+          description: Simulated upstream failure
+
+  /v1/resources/{id}:
+    get:
+      summary: Get details of a specific resource
+      operationId: getResource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resource details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        '404':
+          description: Resource not found
+
+  /v1/resources/{id}/power:
+    post:
+      summary: Change power state of a resource
+      operationId: resourcePowerAction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - action
+              properties:
+                action:
+                  type: string
+                  enum: [on, off]
+      responses:
+        '200':
+          description: Action successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  state:
+                    type: string
+                    enum: [on, off]
+        '400':
+          description: Invalid action
+        '404':
+          description: Resource not found
+        '500':
+          description: Simulated upstream failure
+
+components:
+  schemas:
+    SKU:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "C1-R1GB-D20GB"
+        sku:
+          type: string
+          example: "C1-R1GB-D20GB"
+        type:
+          type: string
+          example: "virtual-machine"
+        name:
+          type: string
+          example: "Micro"
+        cpu:
+          type: integer
+          example: 1
+        ram:
+          type: integer
+          example: 1
+        disk:
+          type: integer
+          example: 20
+        price_hourly:
+          type: number
+          format: double
+          example: 0.27
+        price_monthly:
+          type: number
+          format: double
+          example: 180
+
+    Resource:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "i-12345678"
+        sku:
+          type: string
+          example: "C1-R1GB-D20GB"
+        status:
+          type: string
+          enum: [running, stopped]
+          example: "running"
+        ip:
+          type: string
+          example: "10.0.1.5"
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-10-27T10:00:00Z"

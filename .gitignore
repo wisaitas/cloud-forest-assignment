@@ -1,0 +1,27 @@
+# System
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.env
+
+# Go
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+test
+main
+backend/go/server
+backend/server
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
