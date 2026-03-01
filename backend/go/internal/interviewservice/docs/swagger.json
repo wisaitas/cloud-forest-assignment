@@ -1,0 +1,389 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API สำหรับ Interview Service (Auth: register, login)",
+        "title": "Interview Service API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "เข้าสู่ระบบด้วย email และ password ได้รับ access_token และ refresh_token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Login request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_interviewservice_usecase_auth_login.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK - returns access_token and refresh_token in data",
+                        "schema": {
+                            "$ref": "#/definitions/internal_interviewservice_usecase_auth_login.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized - wrong password"
+                    },
+                    "404": {
+                        "description": "Not Found - user not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "สร้างบัญชีผู้ใช้ใหม่",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register new user",
+                "parameters": [
+                    {
+                        "description": "Register request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_interviewservice_usecase_auth_register.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request - validation error"
+                    },
+                    "409": {
+                        "description": "Conflict - email already exists"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/servers": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "รายการ servers ทั้งหมดของ user ที่ login (ต้องส่ง JWT ใน cookie หรือ header)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "servers"
+                ],
+                "summary": "List servers",
+                "responses": {
+                    "200": {
+                        "description": "OK - returns servers in data",
+                        "schema": {
+                            "$ref": "#/definitions/internal_interviewservice_usecase_servers_getservers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "สร้าง server ใหม่ ต้อง validate SKU กับ infra service (ต้องส่ง JWT ใน cookie หรือ header)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "servers"
+                ],
+                "summary": "Provision server",
+                "parameters": [
+                    {
+                        "description": "Provision request (sku)",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_interviewservice_usecase_servers_provision.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK - success and id is Infrastructure Resource ID",
+                        "schema": {
+                            "$ref": "#/definitions/internal_interviewservice_usecase_servers_provision.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request - invalid or unsupported sku"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "502": {
+                        "description": "Bad Gateway - infra service error"
+                    }
+                }
+            }
+        },
+        "/servers/{server-id}/power": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "เปิดหรือปิด server ต้องส่ง JWT ใน cookie หรือ header",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "servers"
+                ],
+                "summary": "Power on/off server",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Server ID (API server id)",
+                        "name": "server-id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Power action: on or off",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_interviewservice_usecase_servers_power.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK - success and current state",
+                        "schema": {
+                            "$ref": "#/definitions/internal_interviewservice_usecase_servers_power.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request - invalid body or server-id"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found - server not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    },
+                    "502": {
+                        "description": "Bad Gateway - infra service error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "internal_interviewservice_usecase_auth_login.Request": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "john.smith@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "not-so-secure-password"
+                }
+            }
+        },
+        "internal_interviewservice_usecase_auth_login.Response": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_interviewservice_usecase_auth_register.Request": {
+            "type": "object",
+            "required": [
+                "confirm_password",
+                "email",
+                "password"
+            ],
+            "properties": {
+                "confirm_password": {
+                    "type": "string",
+                    "example": "password123"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "password123"
+                }
+            }
+        },
+        "internal_interviewservice_usecase_servers_getservers.Response": {
+            "type": "object",
+            "properties": {
+                "servers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_interviewservice_usecase_servers_getservers.ServerItem"
+                    }
+                }
+            }
+        },
+        "internal_interviewservice_usecase_servers_getservers.ServerItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "infrastructure_resource_id": {
+                    "type": "string"
+                },
+                "power_status": {
+                    "type": "string"
+                },
+                "sku": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_interviewservice_usecase_servers_power.Request": {
+            "type": "object",
+            "required": [
+                "action"
+            ],
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": [
+                        "on",
+                        "off"
+                    ]
+                }
+            }
+        },
+        "internal_interviewservice_usecase_servers_power.Response": {
+            "type": "object",
+            "properties": {
+                "state": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "internal_interviewservice_usecase_servers_provision.Request": {
+            "type": "object",
+            "required": [
+                "sku"
+            ],
+            "properties": {
+                "sku": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_interviewservice_usecase_servers_provision.Response": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
